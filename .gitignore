@@ -1,4 +1,4 @@
 .env
 .vscode
 .cache
-env
+venv
