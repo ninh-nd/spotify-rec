@@ -24,20 +24,13 @@ for i in range(0, len(song_ids), 100):
     audio_features = sp.audio_features(song_ids[i:i+100])
     results += audio_features
 
+# Bring back genres from the csv file to the results
+for i in range(0, len(results)):
+    results[i]['genres'] = df['genres'][i]
+
+
 # Remove any element in results with no audio features
 results = [x for x in results if x is not None]
-
-print("Getting genre for each song from API...")
-for i in range(0, len(results), 50):
-    # Get the artists in a batch of 50
-    first_50_results = results[i:i+50]
-    song_ids = [result['id'] for result in first_50_results]
-    # Get the first artist for 50 songs
-    tracks_info = sp.tracks(song_ids)['tracks']
-    artists = [track['artists'][0]['id'] for track in tracks_info]
-    artists = sp.artists(artists)['artists']
-    for j in range(0, len(artists)):
-        results[i+j]['genres'] = artists[j]['genres']
 
 print("Saving audio features to csv file...")
 # Save the results into a csv file
@@ -45,7 +38,6 @@ with open('song_features.csv', 'w') as f:
     csv_writer = csv.writer(f)
     features = ['id', 'acousticness', 'danceability', 'energy', 'instrumentalness', 'key', 'liveness', 'loudness', 'mode', 'speechiness', 'tempo', 'time_signature', 'valence', 'genres']
     csv_writer.writerow(features)
-    
     for i in range(0, len(results)):
         csv_writer.writerow([results[i][feature] for feature in features])
     f.close()

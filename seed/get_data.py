@@ -1,6 +1,6 @@
 import os
-import time
 import sys
+import random
 from dotenv import load_dotenv
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
@@ -12,36 +12,33 @@ CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 client_credentials_manager = SpotifyClientCredentials(client_id=CLIENT_ID, client_secret=CLIENT_SECRET)
 sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 
-# Get commandline input, including start year and end year
-start_year = int(sys.argv[1])
-end_year = int(sys.argv[2])
-
+NUMBER_OF_SAMPLE_GENRE = int(sys.argv[1])
 # Global variable to store the results
 results = []
+list_of_genres = sp.recommendation_genre_seeds()['genres']
 
-def get_data(year, results, start, end):
-    query_string = "year:" + str(year)
+def get_data(start, end, number_of_sample_genre):
+    random_genres = random.sample(list_of_genres, number_of_sample_genre)
     for i in range(start, end, 50):
+        selected_genre = random_genres[int(i / 50)]
+        query_string = "genre: " + selected_genre
         first_result = sp.search(q=query_string, type='track', limit=50, offset=i)['tracks']['items']
-        for j in range(0, 50):
+        for j in range(0, len(first_result)):
             song_id = first_result[j]['id']
-            artist_id = first_result[j]['artists'][0]['id']
-            list = [song_id, artist_id]
+            list = [song_id, selected_genre]
             results.append(list)
 
-def seed(start_year, end_year):
-    for i in range(start_year, end_year + 1):
-        print("Currently getting 1000 songs from year " + str(i))
-        get_data(i, results, 0, 500)
-        get_data(i, results, 500, 1000)
-        print("Finished getting 1000 songs from year " + str(i))
+def seed(number_of_sample_genre):
+    for i in range(0, number_of_sample_genre):
+        get_data(0, 500, number_of_sample_genre)
+        get_data(500, 1000, number_of_sample_genre)
     # Save the results into a csv file
     with open('song_id.csv', 'w') as f:
         csv_writer = writer(f)
-        csv_writer.writerow(['id', 'artist_id'])
+        csv_writer.writerow(['id', 'genres'])
         for i in range(0, len(results)):
             csv_writer.writerow(results[i])
         f.close()
     print("Number of songs obtained: " + str(len(results)))
 
-seed(start_year, end_year)
+seed(NUMBER_OF_SAMPLE_GENRE)
