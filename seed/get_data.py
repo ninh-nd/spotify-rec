@@ -24,8 +24,10 @@ def get_data(year, results, start, end):
     for i in range(start, end, 50):
         first_result = sp.search(q=query_string, type='track', limit=50, offset=i)['tracks']['items']
         for j in range(0, 50):
-            second_result = first_result[j]['id']
-            results.append(second_result)
+            song_id = first_result[j]['id']
+            artist_id = first_result[j]['artists'][0]['id']
+            list = [song_id, artist_id]
+            results.append(list)
 
 def seed(start_year, end_year):
     for i in range(start_year, end_year + 1):
@@ -36,9 +38,9 @@ def seed(start_year, end_year):
     # Save the results into a csv file
     with open('song_id.csv', 'w') as f:
         csv_writer = writer(f)
-        csv_writer.writerow(['id'])
+        csv_writer.writerow(['id', 'artist_id'])
         for i in range(0, len(results)):
-            csv_writer.writerow([results[i]])
+            csv_writer.writerow(results[i])
         f.close()
     print("Number of songs obtained: " + str(len(results)))
 
