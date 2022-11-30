@@ -10,5 +10,5 @@
 4. Install the requirements: `pip install -r requirements.txt`
 ## Usage
 ### To seed the database
-1. Run `python seed/get_data.py`. This will generate a list of songs ids to `song_id.csv`
+1. Run `python seed/get_data.py <number of genres>`. This will generate a list of songs ids to `song_id.csv` with the number of different genres specified
 2. Run `python seed/seed_database.py`. This will seed `song_features.csv` with the songs and their features

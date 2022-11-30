@@ -24,16 +24,22 @@ for i in range(0, len(song_ids), 100):
     audio_features = sp.audio_features(song_ids[i:i+100])
     results += audio_features
 
+# Bring back genres from the csv file to the results
+for i in range(0, len(results)):
+    results[i]['genres'] = df['genres'][i]
+
+
+# Remove any element in results with no audio features
+results = [x for x in results if x is not None]
+
 print("Saving audio features to csv file...")
 # Save the results into a csv file
 with open('song_features.csv', 'w') as f:
     csv_writer = csv.writer(f)
-    csv_writer.writerow(['id', 'acousticness', 'danceability', 'energy', 'instrumentalness', 'liveness', 'loudness', 'speechiness', 'tempo', 'valence'])
-    
+    features = ['id', 'acousticness', 'danceability', 'energy', 'instrumentalness', 'key', 'liveness', 'loudness', 'mode', 'speechiness', 'tempo', 'time_signature', 'valence', 'genres']
+    csv_writer.writerow(features)
     for i in range(0, len(results)):
-        if (results[i] is not None): # Some songs may not have audio features
-            csv_writer.writerow([results[i]['id'], results[i]['acousticness'], results[i]['danceability'], results[i]['energy'], results[i]['instrumentalness'], results[i]['liveness'], results[i]['loudness'], results[i]['speechiness'], results[i]['tempo'], results[i]['valence']])
-    
+        csv_writer.writerow([results[i][feature] for feature in features])
     f.close()
 
 print("Finish saving audio features to csv file.")
