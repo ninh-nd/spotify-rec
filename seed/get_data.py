@@ -17,21 +17,21 @@ NUMBER_OF_SAMPLE_GENRE = int(sys.argv[1])
 results = []
 list_of_genres = sp.recommendation_genre_seeds()['genres']
 
-def get_data(start, end, number_of_sample_genre):
-    random_genres = random.sample(list_of_genres, number_of_sample_genre)
-    for i in range(start, end, 50):
-        selected_genre = random_genres[int(i / 50)]
-        query_string = "genre: " + selected_genre
-        first_result = sp.search(q=query_string, type='track', limit=50, offset=i)['tracks']['items']
-        for j in range(0, len(first_result)):
-            song_id = first_result[j]['id']
-            list = [song_id, selected_genre]
-            results.append(list)
+def get_data(start, end, random_genres_array):
+    for selected_genre in random_genres_array:
+        for i in range(start, end, 50):
+            query_string = "genre: " + selected_genre
+            first_result = sp.search(q=query_string, type='track', limit=50, offset=i)['tracks']['items']
+            for j in range(0, len(first_result)):
+                song_id = first_result[j]['id']
+                list = [song_id, selected_genre]
+                results.append(list)
+        print("Finish getting data for genre: " + selected_genre)
 
 def seed(number_of_sample_genre):
-    for i in range(0, number_of_sample_genre):
-        get_data(0, 500, number_of_sample_genre)
-        get_data(500, 1000, number_of_sample_genre)
+    random_genres_array = random.sample(list_of_genres, number_of_sample_genre)
+    get_data(0, 500, random_genres_array)
+    get_data(500, 1000, random_genres_array)
     # Save the results into a csv file
     with open('song_id.csv', 'w') as f:
         csv_writer = writer(f)
