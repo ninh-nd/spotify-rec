@@ -1,6 +1,5 @@
 import os
 import sys
-import random
 from dotenv import load_dotenv
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
@@ -12,7 +11,6 @@ CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 client_credentials_manager = SpotifyClientCredentials(client_id=CLIENT_ID, client_secret=CLIENT_SECRET)
 sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 
-# NUMBER_OF_SAMPLE_GENRE = int(sys.argv[1])
 # Global variable to store the results
 results = []
 list_of_genres = sp.recommendation_genre_seeds()['genres']
