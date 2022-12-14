@@ -12,13 +12,13 @@ CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 client_credentials_manager = SpotifyClientCredentials(client_id=CLIENT_ID, client_secret=CLIENT_SECRET)
 sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 
-NUMBER_OF_SAMPLE_GENRE = int(sys.argv[1])
+# NUMBER_OF_SAMPLE_GENRE = int(sys.argv[1])
 # Global variable to store the results
 results = []
 list_of_genres = sp.recommendation_genre_seeds()['genres']
 
-def get_data(start, end, random_genres_array):
-    for selected_genre in random_genres_array:
+def get_data(start, end, genres_array):
+    for selected_genre in genres_array:
         for i in range(start, end, 50):
             query_string = "genre: " + selected_genre
             first_result = sp.search(q=query_string, type='track', limit=50, offset=i)['tracks']['items']
@@ -28,10 +28,13 @@ def get_data(start, end, random_genres_array):
                 results.append(list)
         print("Finish getting data for genre: " + selected_genre)
 
-def seed(number_of_sample_genre):
-    random_genres_array = random.sample(list_of_genres, number_of_sample_genre)
-    get_data(0, 500, random_genres_array)
-    get_data(500, 1000, random_genres_array)
+def seed():
+    genres_array = ["a-cappella", "afrobeat", "blues", "classical", "disco",  
+                    "electronic", "eurobeat", "folk", "funk", "hip-hop", 
+                    "idol", "jazz", "latin", "opera", "poetry", 
+                    "pop", "rock", "soul", "soundtrack", "tango"]
+    get_data(0, 500, genres_array)
+    get_data(500, 1000, genres_array)
     # Save the results into a csv file
     with open('song_id.csv', 'w') as f:
         csv_writer = writer(f)
@@ -41,4 +44,4 @@ def seed(number_of_sample_genre):
         f.close()
     print("Number of songs obtained: " + str(len(results)))
 
-seed(NUMBER_OF_SAMPLE_GENRE)
+seed()
