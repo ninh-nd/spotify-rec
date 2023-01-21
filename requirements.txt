@@ -5,3 +5,4 @@ pandas==1.5.2
 python-dotenv==0.21.0
 seaborn==0.12.2
 spotipy==2.21.0
+pyclustering==22.0.4
